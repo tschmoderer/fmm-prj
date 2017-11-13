@@ -9,7 +9,7 @@ dx = 1;
 
 % matrice des temps de passage
 % on padd T par des bordures (pour gérer les bords facilements) 
-init = 1000;
+init = 100;
 T = 10^5*ones(N+3);
 T(2:end-1,2:end-1) = init*ones(N+1); % les temps effectifs de passage
 
@@ -20,14 +20,17 @@ T(2:end-1,2:end-1) = init*ones(N+1); % les temps effectifs de passage
 ap = zeros(N+1);
 ap(1,1)= 1; ap(1,2) = 1; ap(2,1) = 1; ap(2,2) = 1;
 AP = zeros(N+3); 
-%AP(2:end-1,2:end-1) = ap; % on applique le mm padding
-AP(2,2:end-1) = 1;
+AP(2:end-1,2:end-1) = ap; % on applique le mm padding
+%AP(9,2:end-1) = 1;
+%AP(2:end-1,9) = 1;
+%AP(2,2:end-1) = 1; %AP(16,15) = 1;
 AP = logical(AP);
 
 T(AP) = 0; % les temps de passages à l'instant 0
 t = 0; % décompte du temps 
 
-for k = 1:10000
+%for k = 1:10000
+while sum(AP(:)) < (N+1)^2
 	NB = narrow(AP);
 	NB = logical(NB);
 
@@ -88,8 +91,9 @@ for k = 1:10000
 
 	% trouver le min de Ti 
 	[m I] = min(Ti); 
-	Ti([1:length(Ti)]~=I) = init;
-
+    I = find(Ti == m);
+	%Ti([1:length(Ti)]~=I') = init;
+    Ti(~ismember(I,[1:length(Ti)])) = init;
 	T(NB) = Ti;
 	% mise à jour des ts AP : 
 	accept = zeros(length(T(NB)),1); accept(I) = 1;
@@ -107,6 +111,6 @@ for k = 1:10000
 	zlabel('T')
 	title(['time : ' num2str(t)]);
 	drawnow
-	pause(0.04)
+%	pause(0.04)
 end 
 
