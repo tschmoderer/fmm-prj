@@ -5,13 +5,13 @@ clear all
 % espace [0,1]x[0,1]
 
 N = 20; % Nb de pts de discrétisations dans le sens des x et des y
-dx = 1/N;
+dx = 1;
 
 % matrice des temps de passage
 % on padd T par des bordures (pour gérer les bords facilements) 
-
+init = 1000;
 T = 10^5*ones(N+3);
-T(2:end-1,2:end-1) = ones(N+1); % les temps effectifs de passage
+T(2:end-1,2:end-1) = init*ones(N+1); % les temps effectifs de passage
 
 % Initialisation : 
 % On créé des masques AP, NB
@@ -19,7 +19,9 @@ T(2:end-1,2:end-1) = ones(N+1); % les temps effectifs de passage
 % t = 0 les poinst acceptés sont 
 ap = zeros(N+1);
 ap(1,1)= 1; ap(1,2) = 1; ap(2,1) = 1; ap(2,2) = 1;
-AP = zeros(N+3); AP(2:end-1,2:end-1) = ap; % on applique le mm padding
+AP = zeros(N+3); 
+%AP(2:end-1,2:end-1) = ap; % on applique le mm padding
+AP(2,2:end-1) = 1;
 AP = logical(AP);
 
 T(AP) = 0; % les temps de passages à l'instant 0
@@ -86,7 +88,7 @@ for k = 1:10000
 
 	% trouver le min de Ti 
 	[m I] = min(Ti); 
-	Ti([1:length(Ti)]~=I) = 1;
+	Ti([1:length(Ti)]~=I) = init;
 
 	T(NB) = Ti;
 	% mise à jour des ts AP : 

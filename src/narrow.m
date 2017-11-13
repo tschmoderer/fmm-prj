@@ -9,10 +9,10 @@ function NB = narrow(AP);
 	for i = 2:s(1)-1
 		for j = 2: s(2)-1
 				if (AP(i,j) == 1)
-						if (AP(i+1,j) != 1) nb(i+1,j) = 1; end;
-						if (AP(i,j+1) != 1) nb(i,j+1) = 1; end;
-						if (AP(i-1,j) != 1) nb(i-1,j) = 1; end;
-						if (AP(i,j-1) != 1) nb(i,j-1) = 1; end;
+						if (AP(i+1,j) ~= 1) nb(i+1,j) = 1; end;
+						if (AP(i,j+1) ~= 1) nb(i,j+1) = 1; end;
+						if (AP(i-1,j) ~= 1) nb(i-1,j) = 1; end;
+						if (AP(i,j-1) ~= 1) nb(i,j-1) = 1; end;
 			end												
 		end
 	end
