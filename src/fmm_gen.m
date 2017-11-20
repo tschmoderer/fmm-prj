@@ -2,14 +2,14 @@ clc
 clear all
 close all
 
-N = 20;
+N = 30;
 dx = 1;
-
 
 % t = 0 les poinst acceptés sont 
 ap = zeros(N+1);
-%ap(1,1)= 1; ap(1,2) = 1; ap(2,1) = 1; ap(2,2) = 1;
-ap(7:9,9:11) = 1;
+ap(1,1)= 1; ap(1,2) = 1; ap(2,1) = 1; ap(2,2) = 1;
+ap(5:9,10:11) = 1;
+ap(8:15,14:20) = 1;
 AP = zeros(N+3); 
 AP(2:end-1,2:end-1) = ap; 
 AP = logical(AP);
@@ -43,22 +43,22 @@ while sum(AP(:)) < (N+1)^2
         if (Ti(j) < TG(j) && Ti(j) < TD(j) && Ti(j) < TH(j) && Ti(j) < Tb(j))
             error('erreur résolution de l équation');
         elseif (max(max(Ti(j) - TG(j),Ti(j) - TD(j)),0) == 0)
-            if (Ti(j) - TH(j) < Ti(j) - Tb(j))
+            if (Ti(j) - TH(j) <= Ti(j) - Tb(j))
                 % (Ti-Tb)^2 = ..
-                Ti(j) = Tb(j) + (dx/ci(j))^2;
+                Ti(j) = Tb(j) + (dx/ci(j));
             else 
                 % (Ti-TH)^2 = ..
-                Ti(j) = TH(j) + (dx/ci(j))^2;
+                Ti(j) = TH(j) + (dx/ci(j));
             end
         elseif (max(max(Ti(j) - TH(j),Ti(j) - Tb(j)),0) == 0)
-            if (Ti(j) - TG(j) < Ti(j) - TD(j))
+            if (Ti(j) - TG(j) <= Ti(j) - TD(j))
                 % (Ti-TD)^2 = ..
-                Ti(j) = TD(j) + (dx/ci(j))^2;
+                Ti(j) = TD(j) + (dx/ci(j));
             else 
                 % (Ti-TD)^2 = ..
-                Ti(j) = TG(j) + (dx/ci(j))^2;
+                Ti(j) = TG(j) + (dx/ci(j));
             end
-        elseif	(Ti(j) - TG(j) < Ti(j) - TD(j) && Ti(j) - TH(j) < Ti(j) - Tb(j))
+        elseif	(Ti(j) - TG(j) <= Ti(j) - TD(j) && Ti(j) - TH(j) <= Ti(j) - Tb(j))
             % (Ti-TD)^2 + (Ti-Tb)^2=..
             delta = (2*TD(j)+2*Tb(j))^2-4*2*(TD(j)^2+Tb(j)^2-(dx/ci(j))^2);
             Ti(j) = 0.5*(TD(j) + Tb(j)) + 0.25*sqrt(delta);
@@ -70,7 +70,7 @@ while sum(AP(:)) < (N+1)^2
             % (Ti-TG)^2 + (Ti-Tb)^2=..
             delta = (2*TG(j)+2*Tb(j))^2-4*2*(TG(j)^2+Tb(j)^2-(dx/ci(j))^2);
             Ti(j) = 0.5*(TG(j) + Tb(j)) + 0.25*sqrt(delta);
-        elseif (Ti(j) - TG(j) > Ti(j) - TD(j) && Ti(j) - TH(j) > Ti(j) - Tb(j))
+        elseif (Ti(j) - TG(j) >= Ti(j) - TD(j) && Ti(j) - TH(j) >= Ti(j) - Tb(j))
             % (Ti-TG)^2 + (Ti-TH)^2=..
             delta = (2*TG(j)+2*TH(j))^2-4*2*(TG(j)^2+TH(j)^2-(dx/ci(j))^2);
             Ti(j) = 0.5*(TG(j) + TH(j)) + 0.25*sqrt(delta);
@@ -81,7 +81,7 @@ while sum(AP(:)) < (N+1)^2
     m = min(Ti); 
     NA = find(Ti == m);
 
-    Ti(~ismember(NA,[1:length(Ti)])) = 10^5;
+    Ti(~NA) = 10^5;
     u(NB) = Ti;
     
     % mise à jour des ts theta : 
@@ -94,13 +94,13 @@ while sum(AP(:)) < (N+1)^2
 
     %% function plot 
 
-    [XX YY] = meshgrid([1:N+1],[1:N+1]);
-    surf(XX,YY,u(2:end-1,2:end-1)); 
+    [XX YY] = meshgrid([1:N+1],[1:N+1]); 
+    surf(XX,flipud(YY),u(2:end-1,2:end-1)); 
     xlabel('x')
     ylabel('y')
     zlabel('T')
     title(['time : ' num2str(t)]);
     drawnow
-    pause
+   % pause
 
 end

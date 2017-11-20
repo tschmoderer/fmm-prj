@@ -2,30 +2,54 @@ clc
 clear all
 close all
 
-N = 20;
-dx = 1;
-
+N = 100;
+dx = 1/N;
 
 % t = 0 les poinst acceptés sont 
 ap = zeros(N+1);
-ap(1,1)= 1; ap(1,2) = 1; ap(2,1) = 1; ap(2,2) = 1;
+%ap(1,1)= 1; ap(1,2) = 1; ap(2,1) = 1; ap(2,2) = 1;
+% ap(5:9,10:11) = 1;
+% ap(8:15,14:20) = 1;
+for i = 1:N+1
+    for j = 1:N+1
+        if (i-floor(N/2)) + 1.5*(j-floor(N/2))>0
+            ap(i,j) = 1;
+        end
+    end
+
+end
+%ap(11:25,11:25) = 1;
 AP = zeros(N+3); 
 AP(2:end-1,2:end-1) = ap; 
 AP = logical(AP);
 
-t = 0; % décompte du temps 
+t = 0; 
 
 theta = -ones(size(AP));
 theta(AP) = 1;
 
 u = 10^5*ones(size(AP));
 u(find(theta == 1)) = 0;
+utmp = u;
+[XX YY] = meshgrid([1:N+1],[1:N+1]); 
+surf(XX,flipud(YY),u(2:end-1,2:end-1)); 
+xlabel('x')
+ylabel('y')
+zlabel('T')
+title(['time : ' num2str(t)]);
+drawnow
+pause
 
-while sum(theta(:)) < (N+1)^2
-    NB = narrow_gen(theta);
+while sum(AP(:)) < (N+1)^2
+    c = velocity(theta,N);
+
+    NB = narrow(theta,c);
+    U = useful(NB,theta);
     NB = logical(NB);
-
-    c = abs(velocity(N));
+    U = logical(U);
+    
+    utmp = u;
+    utmp(~U) = 10^5;
 
     NG = zeros(size(NB)); NG(2:end-1,1:end-2) = NB(2:end-1,2:end-1); % les noeuds à gauche;
     ND = zeros(size(NB)); ND(2:end-1,3:end) = NB(2:end-1,2:end-1); % les noeuds à droite;
@@ -34,30 +58,30 @@ while sum(theta(:)) < (N+1)^2
 
     NG = logical(NG); ND = logical(ND); NH = logical(NH); Nb = logical(Nb);
 
-    TG = u(NG); TD = u(ND); TH = u(NH); Tb = u(Nb);
-    Ti = u(NB);
+    TG = utmp(NG); TD = utmp(ND); TH = utmp(NH); Tb = utmp(Nb);
+    Ti = utmp(NB);
     ci = c(NB);
 
     for j = 1:length(Ti)
         if (Ti(j) < TG(j) && Ti(j) < TD(j) && Ti(j) < TH(j) && Ti(j) < Tb(j))
             error('erreur résolution de l équation');
         elseif (max(max(Ti(j) - TG(j),Ti(j) - TD(j)),0) == 0)
-            if (Ti(j) - TH(j) < Ti(j) - Tb(j))
+            if (Ti(j) - TH(j) <= Ti(j) - Tb(j))
                 % (Ti-Tb)^2 = ..
-                Ti(j) = Tb(j) + (dx/ci(j))^2;
+                Ti(j) = Tb(j) + (dx/ci(j));
             else 
                 % (Ti-TH)^2 = ..
-                Ti(j) = TH(j) + (dx/ci(j))^2;
+                Ti(j) = TH(j) + (dx/ci(j));
             end
         elseif (max(max(Ti(j) - TH(j),Ti(j) - Tb(j)),0) == 0)
-            if (Ti(j) - TG(j) < Ti(j) - TD(j))
+            if (Ti(j) - TG(j) <= Ti(j) - TD(j))
                 % (Ti-TD)^2 = ..
-                Ti(j) = TD(j) + (dx/ci(j))^2;
+                Ti(j) = TD(j) + (dx/ci(j));
             else 
                 % (Ti-TD)^2 = ..
-                Ti(j) = TG(j) + (dx/ci(j))^2;
+                Ti(j) = TG(j) + (dx/ci(j));
             end
-        elseif	(Ti(j) - TG(j) < Ti(j) - TD(j) && Ti(j) - TH(j) < Ti(j) - Tb(j))
+        elseif	(Ti(j) - TG(j) <= Ti(j) - TD(j) && Ti(j) - TH(j) <= Ti(j) - Tb(j))
             % (Ti-TD)^2 + (Ti-Tb)^2=..
             delta = (2*TD(j)+2*Tb(j))^2-4*2*(TD(j)^2+Tb(j)^2-(dx/ci(j))^2);
             Ti(j) = 0.5*(TD(j) + Tb(j)) + 0.25*sqrt(delta);
@@ -69,35 +93,41 @@ while sum(theta(:)) < (N+1)^2
             % (Ti-TG)^2 + (Ti-Tb)^2=..
             delta = (2*TG(j)+2*Tb(j))^2-4*2*(TG(j)^2+Tb(j)^2-(dx/ci(j))^2);
             Ti(j) = 0.5*(TG(j) + Tb(j)) + 0.25*sqrt(delta);
-        elseif (Ti(j) - TG(j) > Ti(j) - TD(j) && Ti(j) - TH(j) > Ti(j) - Tb(j))
+        elseif (Ti(j) - TG(j) >= Ti(j) - TD(j) && Ti(j) - TH(j) >= Ti(j) - Tb(j))
             % (Ti-TG)^2 + (Ti-TH)^2=..
             delta = (2*TG(j)+2*TH(j))^2-4*2*(TG(j)^2+TH(j)^2-(dx/ci(j))^2);
             Ti(j) = 0.5*(TG(j) + TH(j)) + 0.25*sqrt(delta);
         end
     end
-
-    % trouver le min de Ti 
-    m = min(Ti); 
-    NA = find(Ti == m);
-
-    Ti(~ismember(NA,[1:length(Ti)])) = 10^5;
-    T(NB) = Ti;
     
-    % mise à jour des ts theta : 
-    accept = zeros(length(T(NB)),1); accept(NA) = 1;
-    AP(NB) = accept;
-    AP = logical(AP);
-
+    m = min(Ti);
+    
+%     dt = 1;
+%     t = max(t2,min(m,t2+dt));
+%     if t == t2+dt
+%         
+%        continue; 
+%     end
+    
+    NA = find(Ti == m);
+    Ti(~NA) = 10^5;
+    u(NB) = Ti;
+    
+    tmp = theta(NB);
+    tmp(NA) = -tmp(NA);
+    theta(NB) = tmp;
+    
     t = t + m;
 
     %% function plot 
 
-    [XX YY] = meshgrid([1:N+1],[1:N+1]);
-    surf(XX,YY,u(2:end-1,2:end-1)); 
+    [XX YY] = meshgrid([1:N+1],[1:N+1]); 
+    surf(XX,flipud(YY),u(2:end-1,2:end-1)); 
     xlabel('x')
     ylabel('y')
     zlabel('T')
     title(['time : ' num2str(t)]);
     drawnow
+   % pause(0.04)
 
 end
