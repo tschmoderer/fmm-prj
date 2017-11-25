@@ -2,23 +2,17 @@ clc
 clear all
 close all
 
-N = 100;
+N = 30;
 dx = 1/N;
 
 % t = 0 les poinst acceptés sont 
 ap = zeros(N+1);
-%ap(1,1)= 1; ap(1,2) = 1; ap(2,1) = 1; ap(2,2) = 1;
-% ap(5:9,10:11) = 1;
-% ap(8:15,14:20) = 1;
-for i = 1:N+1
-    for j = 1:N+1
-        if (i-floor(N/2)) + 1.5*(j-floor(N/2))>0
-            ap(i,j) = 1;
-        end
-    end
+ap(1,1)= 1; ap(1,2) = 1; ap(2,1) = 1; ap(2,2) = 1;
+%ap(5:9,10:11) = 1;
+%ap(8:15,14:20) = 1;
 
-end
-%ap(11:25,11:25) = 1;
+ap(9:15,9:15) = 1;
+
 AP = zeros(N+3); 
 AP(2:end-1,2:end-1) = ap; 
 AP = logical(AP);
@@ -40,8 +34,9 @@ title(['time : ' num2str(t)]);
 drawnow
 pause
 
-while sum(AP(:)) < (N+1)^2
-    c = velocity(theta,N);
+m = 10;
+while sum(m) > 0
+    c = abs(velocity(theta,N));
 
     NB = narrow(theta,c);
     U = useful(NB,theta);
@@ -101,13 +96,6 @@ while sum(AP(:)) < (N+1)^2
     end
     
     m = min(Ti);
-    
-%     dt = 1;
-%     t = max(t2,min(m,t2+dt));
-%     if t == t2+dt
-%         
-%        continue; 
-%     end
     
     NA = find(Ti == m);
     Ti(~NA) = 10^5;
