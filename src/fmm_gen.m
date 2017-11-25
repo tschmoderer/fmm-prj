@@ -3,7 +3,7 @@ clear all
 close all
 
 N = 30;
-dx = 1;
+dx = 1/N;
 
 % t = 0 les poinst acceptés sont 
 ap = zeros(N+1);
@@ -23,6 +23,15 @@ theta(AP) = 1;
 
 u = 10^5*ones(size(AP));
 u(find(theta == 1)) = 0;
+
+[XX YY] = meshgrid([1:N+1],[1:N+1]); 
+surf(XX,flipud(YY),u(2:end-1,2:end-1)); 
+xlabel('x')
+ylabel('y')
+zlabel('T')
+title(['time : ' num2str(t)]);
+drawnow
+pause
 
 while sum(AP(:)) < (N+1)^2
     NB = narrow_gen(theta);
