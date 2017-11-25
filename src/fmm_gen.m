@@ -8,11 +8,13 @@ dx = 1;
 % t = 0 les poinst acceptés sont 
 ap = zeros(N+1);
 ap(1,1)= 1; ap(1,2) = 1; ap(2,1) = 1; ap(2,2) = 1;
-ap(5:9,10:11) = 1;
-ap(8:15,14:20) = 1;
 AP = zeros(N+3); 
+%AP(2:end-1,2:end-1) = ap; % on applique le mm padding
+%AP(9,2:end-1) = 1;
+%AP(2:end-1,9) = 1;
 AP(2:end-1,2:end-1) = ap; 
-AP = logical(AP);
+AP(2,2:end-1) = 1; AP(16,15) = 1;
+ AP = logical(AP);
 
 t = 0; % décompte du temps 
 
