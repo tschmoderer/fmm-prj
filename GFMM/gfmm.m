@@ -12,7 +12,8 @@ ap = zeros(N+1);
 % ap(floor(N/2)-17:floor(N/2)+17,floor(N/2)-17:floor(N/2)+17) = 1;
 
 % example 2 : 
-ap(1,1) = 1;
+ap(1,1) = 1; ap(end,1) = 1;
+ap(1,end) = 1; ap(end,end) = 1;
 
 AP = zeros(N+3); 
 AP(2:end-1,2:end-1) = ap; 
