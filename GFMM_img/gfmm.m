@@ -1,9 +1,10 @@
 clc
 clear all
 close all
-N = 100;
-Img=phantom('Modified Shepp-Logan',N+1);
 
+%Img=phantom('Modified Shepp-Logan',N+1);
+Img=double(imread('brain.png'));
+N = 191;
 dx = 1/N;
 
 % t = 0 les poinst acceptés sont 
