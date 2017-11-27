@@ -1,6 +1,13 @@
 function c = velocity(theta,N)
+%     % example 1
+%     c = -ones(N+3);
+%     c(floor(N/2)-5:floor(N/2)+5,floor(N/2)-5:floor(N/2)+5) = 1;
+    
+    % example 2 
     c = ones(N+3);
-    c(find(theta < 0)) = -1;
+    c(floor(N/2)-5:floor(N/2)+5,floor(N/2)-5:floor(N/2)+5) = -1;
+    
+    %c(find(theta < 0)) = -1;
     s = size(c);
     for i = 2:s(1)-1
         for j = 2:s(2)-1

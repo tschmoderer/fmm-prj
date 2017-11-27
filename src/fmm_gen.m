@@ -6,14 +6,29 @@ N = 30;
 dx = 1/N;
 
 % t = 0 les poinst acceptés sont 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                               EXEMPLES                                 %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 ap = zeros(N+1);
-ap(1,1)= 1; ap(1,2) = 1; ap(2,1) = 1; ap(2,2) = 1;
+
+% Exemple 1 : exemple de Tim avec falaise et point au milieu
+% ap(1,1)= 1; ap(1,2) = 1; ap(2,1) = 1; ap(2,2) = 1;
+
+% Exemple 2 : front au milieu et vitesse négative
+ ap(10:20, 15:26) = 1;
+
+% Exemple 3 : 2 fronts au milieu et vitesse positive 
+%ap(5:10, 12:16) = 1; ap(15:19,15:19) = 1;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 AP = zeros(N+3); 
 %AP(2:end-1,2:end-1) = ap; % on applique le mm padding
 %AP(9,2:end-1) = 1;
 %AP(2:end-1,9) = 1;
 AP(2:end-1,2:end-1) = ap; 
-AP(2,2:end-1) = 1; AP(16,15) = 1;
+%AP(2,2:end-1) = 1; AP(16,15) = 1;
  AP = logical(AP);
 
 t = 0; % décompte du temps 
@@ -37,7 +52,7 @@ while sum(AP(:)) < (N+1)^2
     NB = narrow_gen(theta);
     NB = logical(NB);
 
-    c = abs(velocity(N));
+    c =  abs(velocity(N));
 
     NG = zeros(size(NB)); NG(2:end-1,1:end-2) = NB(2:end-1,2:end-1); % les noeuds à gauche;
     ND = zeros(size(NB)); ND(2:end-1,3:end) = NB(2:end-1,2:end-1); % les noeuds à droite;
@@ -112,6 +127,6 @@ while sum(AP(:)) < (N+1)^2
     zlabel('T')
     title(['time : ' num2str(t)]);
     drawnow
-   % pause
+    %pause
 
 end

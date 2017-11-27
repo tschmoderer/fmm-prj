@@ -2,16 +2,17 @@ clc
 clear all
 close all
 
-N = 30;
+N = 50;
 dx = 1/N;
 
 % t = 0 les poinst acceptés sont 
 ap = zeros(N+1);
-ap(1,1)= 1; ap(1,2) = 1; ap(2,1) = 1; ap(2,2) = 1;
-%ap(5:9,10:11) = 1;
-%ap(8:15,14:20) = 1;
 
-ap(9:15,9:15) = 1;
+% example 1 : c(maison) > 0 
+% ap(floor(N/2)-17:floor(N/2)+17,floor(N/2)-17:floor(N/2)+17) = 1;
+
+% example 2 : 
+ap(1,1) = 1;
 
 AP = zeros(N+3); 
 AP(2:end-1,2:end-1) = ap; 
@@ -35,8 +36,8 @@ drawnow
 pause
 
 m = 10;
-while sum(m) > 0
-    c = abs(velocity(theta,N));
+while sum(abs(m)) > 0
+    c = velocity(theta,N);
 
     NB = narrow(theta,c);
     U = useful(NB,theta);
@@ -55,7 +56,7 @@ while sum(m) > 0
 
     TG = utmp(NG); TD = utmp(ND); TH = utmp(NH); Tb = utmp(Nb);
     Ti = utmp(NB);
-    ci = c(NB);
+    ci = abs(c(NB));
 
     for j = 1:length(Ti)
         if (Ti(j) < TG(j) && Ti(j) < TD(j) && Ti(j) < TH(j) && Ti(j) < Tb(j))
@@ -116,6 +117,4 @@ while sum(m) > 0
     zlabel('T')
     title(['time : ' num2str(t)]);
     drawnow
-   % pause(0.04)
-
 end
