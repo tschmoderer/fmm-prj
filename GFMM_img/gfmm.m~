@@ -3,7 +3,7 @@ clear all
 close all
 
 %Img=phantom('Modified Shepp-Logan',N+1);
-Img=double(rgb2gray(imread('nanard.png')));
+Img=double(rgb2gray(imread('map3.png')));
 N = 149;
 dx = 1/N;
 
@@ -15,10 +15,10 @@ ap = zeros(N+1);
 
 % example 2 : 
 %ap(floor(N/2),floor(N/2)) = 1;
-ap(:,25) = 1;
+ap(1,:) = 1;
 ap(:,end) = 1;
-ap(:,1) = 1;
-ap(end,:) =1;
+ap(end,1) = 1;
+ap(end,end) =1;
 AP = zeros(N+3); 
 AP(2:end-1,2:end-1) = ap; 
 AP = logical(AP);
@@ -42,7 +42,7 @@ pause
 
 m = 10;
 while 1
-    c = 100*velocity(Img);
+    c = velocity(Img);
 
     NB = narrow(theta,c);
     U = useful(NB,theta);
@@ -114,7 +114,7 @@ while 1
     t = t + m;
 
     %% function plot 
-    %[XX YY] = meshgrid([1:N+1],[1:N+1]); 
+    [XX YY] = meshgrid([1:N+1],[1:N+1]); 
     %surf(XX,flipud(YY),u(2:end-1,2:end-1)); 
     contour(XX,flipud(YY),u(2:end-1,2:end-1));
     xlabel('x')
